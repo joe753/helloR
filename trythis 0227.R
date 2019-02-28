@@ -111,8 +111,7 @@ save(mtx, file = 'data/meltop100.rda')
 
 #2
 meltopcsv = read_excel("data/meltop100.xlsx")
-save(meltopcsv, file = 'data/test.rda')
-a = load('data/test.rda')
+read.csv("data/melon_test.csv")
 a
 #3
 read.
@@ -122,3 +121,82 @@ result = fwfdata[, c(2,4,5)]
 colnames(result) = c('연도','온도','구분자')
 result
 
+
+
+boxplot(data$수학)
+
+hist(data$수학)
+
+data[data$학번 == 10337, ]
+
+km = data[data$국어 > 90 & data$수학 > 90, ]
+km
+
+km[order(km$수학), ]
+
+read.csv("data/ttt.csv")
+order(km$수학)
+mean(data$수학)
+
+#1
+result = data[data$반 == '난' & data$성별 == '남' & data$수학 > 90 & data$국어 > 90, ]
+result[order(result$'국어',decreasing=TRUE),]
+
+#2
+data$평균 = (data[,4] + data[,5] + data[,6] + data[,7] + data[,8]) / 5
+
+result = aggregate(data=guk80[data$국어 >= 80, ], cbind(국어,평균)~반, mean)
+result
+
+options(encoding="UTF-8")
+
+
+
+
+data$pass = ifelse(data$평균 >= 60, TRUE, FALSE)
+data
+data$scout = ifelse(data$평균 >= 60, 
+                    ifelse(data$성별 == '남', 'BoyScout', 'GirlScout'),
+                    '')
+
+#1
+a = data[data$scout != '',]
+qplot(a$scout)
+
+#2
+data$학점 = ifelse(data$평균 >= 90, 'A', ifelse(data$평균>=80, 'B', ifelse(data$평균>=70, 'C', ifelse(data$평균>=60, 'D', 'F'))))
+data
+#3
+qplot(data$학점)
+
+mpg = as.data.frame(ggplot2::mpg)
+aggregate(data=data, 수학~반, mean)
+mpg
+km[order(km$수학), ]
+
+aggregate(data=data, cbind(국어,영어,수학)~반, mean)
+
+
+
+#1
+mpg$평균연비 = (mpg[,8 ] + mpg[, 9] / 2)
+mpg
+
+#2
+a = mpg[,c(4,12,10)]
+b= aggregate(data=a, 평균연비~year+fl ,mean)
+b[order(b$year),]
+
+#3
+midwest  = as.data.frame(ggplot2::midwest)
+View(midwest)
+biggest_area = (midwest[midwest$area == max(midwest$area),])
+biggest_area[,c(2:4)]
+biggest_area = (midwest[midwest$area == max(midwest$area),])
+
+
+
+#4
+cn = colnames(midwest)
+cn[5] = 'total' 
+cn[10] = 'asian'
