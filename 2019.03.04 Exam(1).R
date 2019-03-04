@@ -1,6 +1,6 @@
 #1
 mpg$평균연비 = (mpg[,8 ] + mpg[, 9] / 2)
-mpg
+mpg[order(mpg$평균연비, decreasing=TRUE),]
 
 
 #2
