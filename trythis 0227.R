@@ -228,6 +228,7 @@ most_popamerindian[,c(2,3,9)]
 most_popasian = midwest[midwest$popasian == max(midwest$popasian),]
 most_popasian[,c(2,3,10)]
 
+
 describe(midwest)
 midwest$state
 ###########
@@ -255,7 +256,7 @@ barplot(stat_asianpct, names.arg= statpop_total$state)
 
 #7
 avr_popasian = mean(midwest$popasian)
-midwest$asianrate = ifelse(midwest$popasian >= avr_popasian, 'lg', 'sm')
+midwest$asianrate = ifelse(midwest$popasian > avr_popasian, 'lg', 'sm')
 View(midwest)
 
 #8
@@ -263,3 +264,151 @@ qplot(midwest$asianrate)
 
 qplot(midwest$asianpct)
 hist(midwest$asianpct)
+
+
+
+
+
+
+rep(1, times=3)
+rep(LETTERS[1:5], length.out=27)
+
+
+seq(13.5, -4.5 ,length.out=10)
+
+
+set.seed(100); sample(1:5, size=3)    
+
+
+sample(1:45, size=6, replace=F)
+
+runif(20)
+runif(n=30, min=50, max=60)
+
+sample(1:5, size=5, replace=T)
+
+data$c1 = sample(rep(LETTERS[1:6], times=(nrow(data)/6)), size=nrow(data), replace=F)
+str(data$c1)
+ 
+set.seed(255)
+smdt = data.frame(stuno = 1:5, 
+                  Korean=sample(60:100, 5),
+                  English=sample((5:10) * 10, 5),
+                  Math=sample(50:100, 5))
+smdt
+
+data[1:3, '']
+set.seed(100)
+sample(1:5, size=30, replace=T)
+grep(pattern='^2.*0$', x=data$학번, value = T)   # value= T(값을 출력, F: 행)
+
+
+
+
+install.packages('lubridate')
+library(lubridate)
+
+
+ymd('20190228') 
+
+
+mdy('02282019')
+dt1 = ymd('20190305')
+year(dt1)
+day(dt1)
+month(dt1) = 3
+day(dt1) = 1
+dt1
+
+month(days_in_month(1:12))
+month.name
+
+class(a)
+a[1,]
+ddays(10)
+
+
+for (i in 1:nrow(data)) {print (data[i,'수학'])}
+
+i = 0
+
+while(i < 10) { print(i); i = i + 1 } 
+
+i = 0
+while(TRUE) {
+  i = i + 1
+  if (i %% 3 == 1 | i %% 3 == 2)
+    next
+  if (i > 30)
+    break
+  print (i)
+}
+
+smdt
+apply(smdt[, 2:4], MARGIN = 1, FUN = mean)
+
+apply(smdt[, 2:4], MARGIN = 2, FUN = quantile)
+
+lapply(smdt[, 2:4], FUN = mean)
+sapply(smdt[, 2:4], FUN = mean, simplify = T)
+vapply(smdt[, 2:4], FUN = mean, FUN.VALUE = 1)
+
+library('reshape2')
+
+dfsum = cbind( data.frame(no=1:4, year=2016:2019), 
+               matrix(round(runif(16), 3) * 1000, ncol=4, dimnames = list(NULL, paste0('Q', 1:4))) )
+dimnames = lst(1:4, paste0('Q', 1:4))
+dimnames
+
+dfsum
+dim(dfsum)
+matrix(round(runif(16),3) * 1000, ncol=4, )
+
+dfsum = cbind( data.frame(no=1:4, year=2016:2019), 
+               matrix(round(runif(16), 3) * 1000, ncol=4, dimnames = list(NULL, paste0('Q', 1:4))) )
+
+
+dfsum
+melt(data=dfsum[,2:6], id.vars = "year")
+
+
+
+
+##########################
+#1
+data$group = sample(rep(LETTERS[1:3], times=(nrow(data)/3)), size=nrow(data), replace=F)
+
+
+
+#2
+while(TRUE) {
+  x = as.integer(readline(prompt = "Input the number: "))
+  vect = c(0,1)
+  if ( x <= 0 ) break
+  
+  else {
+    for (i in 1:x - 2)
+      vect[length(vect) + 1 ] = vect[length(vect) - 1] + vect[length(vect)]
+  }
+  print ( vect[1:x] )
+}
+
+
+#3
+smdt[nrow(smdt) + 1 , 2:4] = apply(smdt[, 2:4], MARGIN = 2, FUN = mean)
+smdt[nrow(smdt),1] = '계'
+smdt$total = apply(smdt[,2:4], MARGIN = 1, FUN = sum)
+smdt$avg = apply(smdt[,2:4], MARGIN= 1, FUN=mean)
+smdt
+
+
+
+#4
+df_4 = cbind( data.frame(no=1:4, year=2016:2019), 
+               matrix(round(runif(48), 3) * 1000, ncol=12, dimnames = list(NULL, month.name))) 
+
+meltsum = melt(df_4[,2:14], id.vars = "year", variable.name = 'month')
+colna
+
+mes(meltsum)[3] = 'saleamt'
+meltsum
