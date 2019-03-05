@@ -30,7 +30,5 @@ smdt
 df_4 = cbind( data.frame(no=1:4, year=2016:2019), 
                matrix(round(runif(48), 3) * 1000, ncol=12, dimnames = list(NULL, month.name))) 
 
-meltsum = melt(df_4[,2:14], id.vars = "year", variable.name = 'month')
-
-mes(meltsum)[3] = 'saleamt'
+meltsum = melt(df_4[,2:14], id.vars = "year", variable.name = 'month', variable.name = 'saleamt')
 meltsum
