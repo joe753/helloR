@@ -399,16 +399,147 @@ smdt[nrow(smdt) + 1 , 2:4] = apply(smdt[, 2:4], MARGIN = 2, FUN = mean)
 smdt[nrow(smdt),1] = '계'
 smdt$total = apply(smdt[,2:4], MARGIN = 1, FUN = sum)
 smdt$avg = apply(smdt[,2:4], MARGIN= 1, FUN=mean)
-smdt
-
+smdt$avg = round(smdt$avg)
 
 
 #4
 df_4 = cbind( data.frame(no=1:4, year=2016:2019), 
-               matrix(round(runif(48), 3) * 1000, ncol=12, dimnames = list(NULL, month.name))) 
+               matrix(round(runif(48), 3) * 100000, ncol=12, dimnames = list(NULL, month.name))) 
 
-meltsum = melt(df_4[,2:14], id.vars = "year", variable.name = 'month')
+meltsum = melt(df_4[,2:14], id.vars = "year", variable.name = 'month', value.name = 'saleamt')
 colna
 
 mes(meltsum)[3] = 'saleamt'
 meltsum
+
+
+t = c(5, 7, 2, 8, 20, 11, 19)
+t[order(t)]
+
+smdt[order(smdt$avg, -smdt$Korean),]
+t
+rev(t)
+
+dataArray = array(1:24, dim=c(3, 4, 2))  
+dim(dataArray) 
+
+dataArray
+
+
+#### dplyr
+options = 
+data = read.csv('data/성적.csv')
+library(dplyr)
+data
+data = rename(data, math=수학)
+head(data)
+
+attach(data)
+mean(math)
+sum(math)
+
+detach(data)
+
+mean(data$국어)
+data[data$group == 'C',]
+with(data, mean(math))
+
+
+data
+data %>% filter(group == 'C' & math > 90)
+
+data %>% filter(수학 %in% c('50', '75'))
+
+#### try 1
+mpg %>% 
+  filter(class == 'suv' | class == 'compact') %>%
+  select (model, cty, hwy, fl)
+head(mpg)
+
+### try 2
+mpg %>% 
+  arrange(desc(hwy)) %>%
+  head(5)
+
+
+
+###  try 3
+mpg %>% 
+  filter(class == 'suv') %>% 
+  group_by(manufacturer) %>%
+  summarise(m = mean( (cty + hwy) / 2)) %>%
+  arrange(desc(m)) %>%
+  head(5)
+
+df2 = data[1:10, 1:6]
+
+
+#### try 4
+fl = c('c','d','e','p','r')
+type = c('CNG', 'diesel', 'E85', 'Premi', 'Reqular')
+price = c(1.33, 1.02, 0.92, 1.99, 1.22)
+fl_info = data.frame(fl,type,price, stringsAsFactors =F)
+fl_info
+
+mpg = inner_join(mpg, fl_info, by=c('fl', 'fl')) %>%
+  select(-type)
+  
+mpg
+
+
+
+
+
+a = mpg %>% 
+  group_by(manufacturer) %>% 
+  filter(class == 'suv') %>% 
+  mutate(total_fl = (cty + hwy) / 2 ) %>%
+  arrange(desc(manufacturer)) 
+a %>% head(5)
+  
+
+data %>%
+  mutate(kor_eng = kor + eng) %>%
+  arrange(desc(kor_eng)) %>%
+  head
+
+data %>%
+  group_by(cls, gen) %>%
+  summarise(m = mean(math))
+
+data %>%
+  group_by (cls) %>%
+  summarise(mean_math = mean(math),
+            sum_math = sum(math),
+            medi_math = median(math),
+            n_math = n()) %>%
+  arrange(desc(mean_math))
+
+
+data %>% 
+  group_by (gen) %>%
+  summarise(mean_kor = mean(kor),
+            sum_kor = sum(kor),
+            mean_eng = mean(eng),
+            n_stu = n())
+
+
+
+dfsum = cbind( data.frame(yno=1:4, year=2016:2019), 
+               matrix(round(runif(16), 3) * 1000, ncol=4, dimnames = list(NULL, paste0('Q', 1:4))))
+
+dfsum
+
+
+sales = cbind( data.frame(no=1:12, year=2016:2019), 
+               matrix(round(runif(144), 3) * 100000, ncol=12, dimnames = list(NULL, month.abb)) )
+sales
+
+
+right_join (sales, dfsum, by=c('no' = 'yno'))
+
+inner_join (sales, dfsum, by=c('year'='year'))
+
+semi_join(sales, dfsum, by=c('year' = 'year', 'no' = 'yno'))
+
+full_join(sales, dfsum, by=c('year' = 'year', 'no' = 'yno'))
