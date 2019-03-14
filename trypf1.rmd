@@ -61,7 +61,7 @@ try3 = data %>% group_by(cls) %>% filter(kor >= 95)
 ggplot(try3, aes(kor)) +
   geom_density(aes(fill=factor(cls)), alpha=0.5) +
   labs(title="반별 국어 우수 학생", subtitle = "(국어성적 A+)",
-       caption="Source: ggplot2::mpg",
+       caption="Source: data.csv",
        x = "성적",
        y = "밀도",
        fill = "반이름")
