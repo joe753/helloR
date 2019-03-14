@@ -543,3 +543,145 @@ inner_join (sales, dfsum, by=c('year'='year'))
 semi_join(sales, dfsum, by=c('year' = 'year', 'no' = 'yno'))
 
 full_join(sales, dfsum, by=c('year' = 'year', 'no' = 'yno'))
+
+
+
+
+
+data
+
+
+
+
+plot(x=1, y=1)
+
+smdt
+
+
+plot(x = smdt$stuno, y = smdt$Korean,
+     col = '#0000FF',
+     cex = 2,
+     las= 1,
+     type = 'p',         # p, l, b, c, o, s
+     xlim = c(1, 5),
+     ylim = c(50, 100),
+     pch = 14,                         # > ?points
+     xlab = '학번', ylab = '국어',
+     main = '그래프 타이틀')
+
+
+
+xl = c(0, 8); yl = c(40, 100)
+
+
+plot(x = smdt$stuno, y = smdt$Korean,
+     col='#0000FF', cex=3, pch = 8,
+     xlim = xl, ylim = yl,           # xl = c(-0.5, 5.5); yl = c(0, 100)
+     xlab = '학번', ylab = '국어, 수학',
+     main = '우리반 국어 / 수학 성적')
+
+
+
+plot(x = smdt$stuno, y = smdt$Korean,
+     col='#0000FF', cex=3, pch = 8,
+     xlim = xl, ylim = yl,           # xl = c(-0.5, 5.5); yl = c(0, 100)
+     xlab = '학번', ylab = '국어, 수학',
+     main = '우리반 국어 / 수학 성적')
+par(new = T)
+plot(x = smdt$stuno, y = smdt$Math,
+       col='#ff0000', cex=3, pch = 21,
+       xlim = xl, ylim = yl,
+       xlab = '', ylab = '')
+
+legend('bottomright',     
+        legend=c('국어', '수학'),
+        pch=c(8, 21), col=c('blue', 'red'), bg='gray')
+
+library('dplyr')
+
+t = data  %>% filter(eng > 90) %>% select('cls', 'gen') %>% table
+t
+
+barplot(t,
+          beside = T,
+        xlim = c(0,12),
+          border = 'dark blue',
+          density = 20*4 : 1,
+          angle = 15 + 10*1:2,
+          xlab = '학급별 성별', ylab = '영어',
+          legend=rownames(t),
+          col=heat.colors(4))
+mpg
+
+d1 = mpg %>% group_by (year,displ)
+d1
+
+
+save(data, file='data/data_eng.rda')
+
+### try 1
+d1 = mpg %>% 
+  filter(year == 1999) %>% 
+  group_by(year,displ) %>% 
+  summarise(m1 = mean(cty), m2 = mean(hwy))
+d2 = mpg %>% 
+  filter(year == 2008) %>%
+  group_by(year, displ) %>% 
+  summarise(m1 = mean(cty), m2 = mean(hwy))
+b = bind_cols(d1, d2)
+View(b)
+
+ggplot( b, aes(x=displ)) + 
+  geom_line(aes(y=m1, color='1999 cty')) + 
+  geom_line(aes(y=m2, color='1999 hwy')) +
+  geom_line(aes(y=m11, color='2008 cty'), size=2) +
+  geom_line(aes(y=m21, color='2008 hwy'), size=2) +
+  scale_colour_manual("", breaks = c("1999 cty", "1999 hwy","2008 cty", "2008 hwy"),
+                      values = c("red", "grey", "blue", "black")) +
+  xlab("배기량") +
+  xlim(1, 7) +
+  scale_y_continuous("연비", limits = c(5, 45)) +
+  labs(title = '연도별 통합연비', subtitle = '굵은선 = 2008년') 
+
+## try2
+
+a = data  %>% group_by (cls, gen)%>% filter(kor >= 80)
+a
+
+
+
+ggplot(a, aes(cls)) +
+  geom_bar(aes(fill=gen),
+           width = 0.5) +
+  theme(axis.text.x = element_text(angle=0,       # 글씨의 기울기
+                                   vjust=0.6)) +   # 글씨의 하단 맞춤(띄우기)
+  scale_fill_discrete(name = "성별") + # legend
+  xlab("학급") + 
+  ylab("학생수") + 
+  labs(title = '국어 우수 학생', subtitle = '80점 이상')
+
+
+### try3
+try3 = data %>% group_by(cls) %>% filter(kor >= 95)
+try3
+ggplot(try3, aes(kor)) +
+  geom_density(aes(fill=factor(cls)), alpha=0.5) +
+  labs(title="반별 국어 우수 학생", subtitle = "(국어성적 A+)",
+       caption="Source: ggplot2::mpg",
+       x = "성적",
+       y = "밀도",
+       fill = "실린더수")
+
+### try 4
+
+try4 = midwest %>% filter(poptotal <= 500000 & popasian <= 10000)
+try4
+
+ggplot(data, aes(cls, kor)) +
+  geom_point(aes(color=cls, size=kor), 
+             alpha=0.3)
+
+
+ggplot(try4, aes(poptotal, popasian)) +
+  geom_point(aes(color=poptotal, size=popasian), 
+             alpha=0.3)
