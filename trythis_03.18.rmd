@@ -1,0 +1,105 @@
+```{r}
+library(stringi)
+library('ggplot2')
+library('dplyr')
+library('ggiraphExtra')
+library(gridExtra)
+library(devtools)
+library(ggiraph)
+library(kormaps2014)
+library(plotly)
+library(dygraphs)
+library(xts)  
+```
+---
+title: '빅데이터 분석 시각화 포트폴리오 #2'
+output: html_document
+---
+### 1.다음과 같이 미국의 범죄율을 한번에 작도하시오.
+
+
+```{r}
+usmap = map_data('state') 
+chodata = data.frame(state = tolower(rownames(USArrests)), USArrests)
+ggChoropleth(data=chodata,
+             aes(fill = c(Murder, Assault,UrbanPop,Rape), map_id = state),
+             map = usmap,
+             interactive = T)
+```
+
+### 2.미국 범죄율의 Rape부분을 단계 구분도로 작성하시오.
+#### (단, 툴팁은 그림과 같이 표현하고, 클릭시 해당 state의 wikipedia 페이지를보이도록 HTML로 저장하시오)
+
+```{r}
+wiki = sprintf("window.open(\"http://en.wikipedia.org/wiki/%s\")", as.character(chodata$state))
+tooltips = paste0(
+  sprintf("<p><strong>%s</strong></p>", as.character(chodata$state)),
+  '<table>',
+  '  <tr>',
+  sprintf('<td>%s</td>', paste(chodata$Rape * 10, '/', chodata$UrbanPop * 10 , '만')),
+  '  </tr>',
+  '</table>' )
+  
+chodata
+ggplot(chodata, aes(data = Rape, map_id = state)) +
+  geom_map_interactive( 
+    aes(fill = Rape,
+        data_id = state,
+        tooltip = stringi::stri_enc_toutf8(tooltips),
+        onclick = wiki),
+    map = usmap) +
+  expand_limits(x = usmap$long, y = usmap$lat) +
+  scale_fill_gradient2('Rape', low='red', high = "blue", mid = "green") +
+  labs(title="USA Rape") -> gg_map
+tooltips
+
+ggiraph(code = print(gg_map))
+girafe(ggobj = gg_map)
+
+```
+
+
+###시도별 결핵환자수(kormaps::tbc)를 단계 구분도로 작성하시오.(우리나라)
+#### (단, 환자수는 2006년부터 2015년 총합, NA인 지역은 0으로 표시할 것)
+
+```{r}
+try_tbc2 = tbc
+
+try_tbc2$NewPts = ifelse(is.na(try_tbc2$NewPts), 0, try_tbc2$NewPts)
+try_tbc2 = try_tbc2 %>%  filter(year %in% c(2006:2015))%>% group_by(code, name) %>% summarise(patient = sum(NewPts))
+
+
+onclick2 = sprintf("alert(\"%s\")", as.character(try_tbc2$name))
+
+rm(tooltips)
+
+tooltips = paste0(
+  sprintf("<p><strong>%s</strong></p>", as.character(try_tbc2$name)),
+  '<table>',
+  '  <tr>',
+  sprintf(' <td>%s</td>', stringi::stri_escape_unicode('환자(명)')),
+  # '<td>현</td>',
+  sprintf('<td>%.0f</td>', try_tbc2$patient),
+  '  </tr>',
+  '</table>' )
+
+
+rm(gg_map)
+ggplot(try_tbc2, aes(data = patient, map_id = code)) +
+  geom_map_interactive( 
+    aes(fill = patient,
+        data_id = code,
+        tooltip = tooltips,
+        onclick = onclick2),
+    map = kormap1) +
+  expand_limits(x = kormap1$long, y = kormap1$lat) +
+  scale_fill_gradient2('결핵환자수', low='white', high = "red", mid = "orange") +
+  labs(title="우리나라") -> gg_map
+
+
+ggiraph(code = print(gg_map))
+girafe(ggobj = gg_map)
+
+```
+
+

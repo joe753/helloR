@@ -641,7 +641,7 @@ ggplot( b, aes(x=displ)) +
   xlab("배기량") +
   xlim(1, 7) +
   scale_y_continuous("연비", limits = c(5, 45)) +
-  labs(title = '연도별 통합연비', subtitle = '굵은선 = 2008년') 
+  labs(title = '연도별 통합연비', subtitle = '굵은선 = 2008년')  -> g4
 
 ## try2
 
@@ -706,14 +706,22 @@ chodata = data.frame(state = tolower(rownames(USArrests)), USArrests)
 usmap = map_data('state') 
 head(usmap)
 
+chodata
 
-ggChoropleth(data=chodata,
+murder = ggChoropleth(data=chodata,
              aes(fill=Murder, map_id=state),
              map = usmap,
              title = '..',
              reverse = F,
              interactive = T)
 
+ggChoropleth(data=chodata,
+                      aes(fill=Murder, map_id=state),
+                      map = usmap,
+                      title = '..',
+                      reverse = F,
+                      interactive = T)
+murder + assault
 
 
  ggplot(chodata, aes(map_id = state)) + 
@@ -740,8 +748,9 @@ ggChoropleth(data=chodata,
  
  tooltips
 
- 
+ ddd = sprintf("window.open(\"http://en.wikipedia.org/wiki/%s\")", as.character(chodata$state))
  onclick = sprintf("alert(\"%s\")", as.character(chodata$state))
+ 
 onclick 
 install.packages("ggiraph")
 library(ggiraph)
@@ -756,6 +765,8 @@ ggplot(chodata, aes(data = Murder, map_id = state)) +
   expand_limits(x = usmap$long, y = usmap$lat) +
   scale_fill_gradient2('살인', low='red', high = "blue", mid = "green") +
   labs(title="USA Murder") -> gg_map
+
+gg_map
 
 
 install.packages('stringi')
@@ -775,9 +786,8 @@ setlib
 
 gg_map
 
-options(encoding='UTF-8')
 
-ggiraph(code = print(gg_map))
+ggiraph(code = print(murder))
 girafe(ggobj = gg_map)
 
 
@@ -790,10 +800,11 @@ ggiraph(code = print(gg_map, options(encoding='utf-8')))
  
  devtools::install_github("cardiomoon/kormaps2014")
 
- library(kormaps2014)
- options(encoding='utf-8')
+library(kormaps2014)
 
-kdata = changeCode(korpop1)
+rm(kdata)
+korpop1
+kdata = korpop1
 head(kdata)
 colnames(kdata)
 
@@ -802,10 +813,149 @@ kdata = kdata %>% rename (pop = 총인구_명)
 kdata = kdata %>% rename (area = 행정구역별_읍면동)
 kdata$area = stringi::stri_enc_toutf8(kdata$area)
 
+
+kormap1$SIDO_NM = stringi::stri_enc_toutf8(kormap1$SIDO_NM)
+kormap1$name1 = stringi::stri_enc_toutf8(kormap1$name1)
 head(kormap1)
- 
-ggChoropleth(data=kdata, 
+
+
+ggChoropleth(data=korpop1, 
               aes(fill = pop, map_id = code, tooltip = area),
               map = kormap1,
               interactive = T)
- 
+
+kdata$SIDO_NM 
+
+View(kdata)
+save(kdata, file='data/kdata.rda')
+
+rm(kdata)
+ggplot(kdata, aes(data = pop, map_id = code)) +
+  geom_map( aes(fill = pop), map = kormap1) + 
+  expand_limits(x = kormap1$long, y = kormap1$lat) +
+  scale_fill_gradient2('인구', low='darkblue') +
+  xlab('경도') + ylab('위도') + 
+  labs(title="시도별 인구")
+
+install.packages('plotly')
+library(plotly)
+
+t = ggplot(data, aes(eng, kor)) +
+  geom_point(aes(color=eng, size=kor), alpha=0.3)
+
+test = ggplot(b, aes((m1 + m2)/2, (m11 + m21)/2 )) +
+  geom_point(aes(color=m1, size= m2), alpha=0.3)
+
+ggplotly(g4)
+
+
+library(xts)  
+economics
+
+head(economics)
+
+ue = xts(economics$unemploy, order.by = economics$date)
+dygraph(ue)
+dygraph(ue) %>% dyRangeSelector()
+
+
+psave = xts(economics$psavert, order.by = economics$date)
+ue2 = xts(economics$unemploy / 1000, order.by = economics$date)
+pu = cbind(ue2, psave)
+colnames(pu) = c('unemploy', 'saverate')
+dygraph(pu) %>% dyRangeSelector()
+
+
+
+
+
+
+
+
+ggplot(chodata, aes(data = Murder, map_id = state)) +
+  geom_map_interactive( 
+    aes(fill = Murder,
+        data_id = state,
+        tooltip = tooltips,
+        onclick = onclick), 
+    map = usmap) +
+  expand_limits(x = usmap$long, y = usmap$lat) +
+  scale_fill_gradient2('살인', low='red', high = "blue", mid = "green") +
+  labs(title="USA Murder") -> gg_map
+
+
+
+
+
+
+########################3 Try 1
+
+ggChoropleth(data=chodata,
+             aes(fill = c(Murder, Assault,UrbanPop,Rape), map_id = state),
+             map = usmap,
+             interactive = T)
+
+######################3 TRy 2
+
+tooltips = paste0(
+  sprintf("<p><strong>%s</strong></p>", as.character(chodata$state)),
+  '<table>',
+  '  <tr>',
+  sprintf('<td>%s</td>', paste(chodata$Rape * 10, '/', chodata$UrbanPop * 10 , '만')),
+  '  </tr>',
+  '</table>' )
+  
+chodata
+ggplot(chodata, aes(data = Rape, map_id = state)) +
+  geom_map_interactive( 
+    aes(fill = Rape,
+        data_id = state,
+        tooltip = stringi::stri_enc_toutf8(tooltips),
+        onclick = ddd),
+    map = usmap) +
+  expand_limits(x = usmap$long, y = usmap$lat) +
+  scale_fill_gradient2('Rape', low='red', high = "blue", mid = "green") +
+  labs(title="USA Murder") -> gg_map
+tooltips
+
+ggiraph(code = print(gg_map))
+girafe(ggobj = gg_map)
+
+
+####### Try 3
+try_tbc2 = tbc
+
+try_tbc2$NewPts = ifelse(is.na(try_tbc2$NewPts), 0, try_tbc2$NewPts)
+try_tbc2 = try_tbc2 %>%  filter(year %in% c(2006:2015))%>% group_by(code, name) %>% summarise(patient = sum(NewPts))
+
+
+onclick2 = sprintf("alert(\"%s\")", as.character(try_tbc2$name))
+
+rm(tooltips)
+
+tooltips = paste0(
+  sprintf("<p><strong>%s</strong></p>", as.character(try_tbc2$name)),
+  '<table>',
+  '  <tr>',
+  sprintf(' <td>%s</td>', stringi::stri_escape_unicode('환자(명)')),
+  # '<td>현</td>',
+  sprintf('<td>%.0f</td>', try_tbc2$patient),
+  '  </tr>',
+  '</table>' )
+
+
+rm(gg_map)
+ggplot(try_tbc2, aes(data = patient, map_id = code)) +
+  geom_map_interactive( 
+    aes(fill = patient,
+        data_id = code,
+        tooltip = tooltips,
+        onclick = onclick2),
+    map = kormap1) +
+  expand_limits(x = kormap1$long, y = kormap1$lat) +
+  scale_fill_gradient2('결핵환자수', low='red', high = "blue", mid = "green") +
+  labs(title="우리나라") -> gg_map
+
+
+ggiraph(code = print(gg_map))
+girafe(ggobj = gg_map)

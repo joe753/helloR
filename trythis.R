@@ -1,28 +1,4 @@
-```{r}
-library(stringi)
-library('ggplot2')
-library('dplyr')
-library('ggiraphExtra')
-library(gridExtra)
-library(devtools)
-library(ggiraph)
-library(kormaps2014)
-library(plotly)
-library(dygraphs)
-library(xts)  
-
-```
----
-title: '빅데이터 분석 시각화 포트폴리오 #1'
-output: html_document
----
-
-### 1. mpg데이터에서 연도별 배기량에 따른 도시/고속도로 연비를 꺽은선으로 그리시오.
-#### (단, 2008년은 굵은 선으로 표현하시오)
-```{r}
-mpg = as.data.frame(ggplot2::mpg)
-library('ggplot2')
-library('dplyr')
+### try 1
 d1 = mpg %>% 
   filter(year == 1999) %>% 
   group_by(year,displ) %>% 
@@ -32,6 +8,7 @@ d2 = mpg %>%
   group_by(year, displ) %>% 
   summarise(m1 = mean(cty), m2 = mean(hwy))
 b = bind_cols(d1, d2)
+View(b)
 
 ggplot( b, aes(x=displ)) + 
   geom_line(aes(y=m1, color='1999 cty')) + 
@@ -44,14 +21,13 @@ ggplot( b, aes(x=displ)) +
   xlim(1, 7) +
   scale_y_continuous("연비", limits = c(5, 45)) +
   labs(title = '연도별 통합연비', subtitle = '굵은선 = 2008년') 
-```
 
+## try2
 
-### 2. data(성적.csv) 데이터에서 국어 성적이 80점 이상인학생들의 수를 성비가 보이도록 학급별로 막대그래프를 그리시오.
-
-```{r echo=TRUE}
-load('data/data_eng.rda')
 a = data  %>% group_by (cls, gen)%>% filter(kor >= 80)
+a
+
+
 
 ggplot(a, aes(cls)) +
   geom_bar(aes(fill=gen),
@@ -63,36 +39,28 @@ ggplot(a, aes(cls)) +
   ylab("학생수") + 
   labs(title = '국어 우수 학생', subtitle = '80점 이상')
 
-```
 
-
-### 3. 국어 성적이 95점 이상인 학생들의 학급별 밀도그래프를 그리시오.
-
-
-```{r echo=TRUE}
+### try3
 try3 = data %>% group_by(cls) %>% filter(kor >= 95)
-
+try3
 ggplot(try3, aes(kor)) +
   geom_density(aes(fill=factor(cls)), alpha=0.5) +
   labs(title="반별 국어 우수 학생", subtitle = "(국어성적 A+)",
-       caption="Source: data.csv",
+       caption="Source: ggplot2::mpg",
        x = "성적",
        y = "밀도",
-       fill = "반이름")
+       fill = "실린더수")
 
-```
+### try 4
 
-### 4.midwest데이터에서 전체인구와 아시아계 인구의 관계를 알아보기 위한그래프를 그리시오.
-#### (단, 전체인구는 50만명 이하, 아시아계인구는 1만명 이하만 표시되게)
-
-```{r echo=TRUE}
-midwest = as.data.frame(ggplot2::midwest)
 try4 = midwest %>% filter(poptotal <= 500000 & popasian <= 10000)
+try4
 
+ggplot(data, aes(cls, kor)) +
+  geom_point(aes(color=cls, size=kor), 
+             alpha=0.3)
 
 
 ggplot(try4, aes(poptotal, popasian)) +
   geom_point(aes(color=poptotal, size=popasian), 
              alpha=0.3)
-```
-
