@@ -827,7 +827,7 @@ ggChoropleth(data=korpop1,
 kdata$SIDO_NM 
 
 View(kdata)
-save(kdata, file='data/kdata.rda')
+save(data, file='data/data.rda')
 
 rm(kdata)
 ggplot(kdata, aes(data = pop, map_id = code)) +
@@ -896,6 +896,7 @@ ggChoropleth(data=chodata,
              interactive = T)
 
 ######################3 TRy 2
+wiki = sprintf("window.open(\"http://en.wikipedia.org/wiki/%s\")", as.character(chodata$state))
 
 tooltips = paste0(
   sprintf("<p><strong>%s</strong></p>", as.character(chodata$state)),
@@ -911,7 +912,7 @@ ggplot(chodata, aes(data = Rape, map_id = state)) +
     aes(fill = Rape,
         data_id = state,
         tooltip = stringi::stri_enc_toutf8(tooltips),
-        onclick = ddd),
+        onclick = wiki),
     map = usmap) +
   expand_limits(x = usmap$long, y = usmap$lat) +
   scale_fill_gradient2('Rape', low='red', high = "blue", mid = "green") +
@@ -953,9 +954,66 @@ ggplot(try_tbc2, aes(data = patient, map_id = code)) +
         onclick = onclick2),
     map = kormap1) +
   expand_limits(x = kormap1$long, y = kormap1$lat) +
-  scale_fill_gradient2('결핵환자수', low='red', high = "blue", mid = "green") +
+  scale_fill_gradient2('결핵환자수', low='white', high = "red", mid = "orange") +
   labs(title="우리나라") -> gg_map
 
 
 ggiraph(code = print(gg_map))
 girafe(ggobj = gg_map)
+options(ecoding="UTF-8")
+
+rm(data)
+data
+data
+data
+
+sqldf("select * from data where 국어 < 50")
+
+col
+
+colnames(sqldf("select * from data"))
+
+
+names(data) = iconv(names(data),"cp949", "utf-8")
+
+sqldf("select * from data")
+
+
+
+
+
+
+
+
+
+
+drv = dbDriver("MySQL")
+conn = dbConnect(drv, host='34.85.92.216', port=3306, dbname='melondb', user='root', password='gusdnr75')
+dbSendQuery(conn, 'set character set utf8')
+dbListTables(conn)  
+rsdf = dbGetQuery(conn, "select * from MS_Song limit 5")
+
+
+dbDisconnect(conn)
+dbUnloadDriver(drv)
+
+tryCatch({
+  dbBegin(conn)
+  dbGetQuery(conn, "update MS_Song set title='선물1' where song_no = '30514366'")
+  dbCommit(conn)
+},
+error = function(e) { 
+  dbRollback(conn)
+  print(paste("Error!!", e)) 
+},
+warning = function(w) {
+  print(paste("Warining!!", w))
+},
+finally =  { print ("FFFFFFFFFFFF")  }
+)
+
+
+
+
+
+

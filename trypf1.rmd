@@ -1,17 +1,4 @@
-```{r}
-library(stringi)
-library('ggplot2')
-library('dplyr')
-library('ggiraphExtra')
-library(gridExtra)
-library(devtools)
-library(ggiraph)
-library(kormaps2014)
-library(plotly)
-library(dygraphs)
-library(xts)  
 
-```
 ---
 title: '빅데이터 분석 시각화 포트폴리오 #1'
 output: html_document
