@@ -1,6 +1,7 @@
 ---
-title: "R_Exam_03-20(1)"
+title: "R_Exam_04-19(1)"
 output: html_document
+date : "2019.04.19"
 ---
 ### 1. 산점도
 ##### &emsp;&emsp;**용도** : &nbsp; x축과 y축으로 이루어진 그래프에 두 변수의 값을 점으로 나타낸 그래프이다. 
@@ -99,10 +100,10 @@ try3
 ggplot(try3, aes(kor)) +
   geom_density(aes(fill=factor(cls)), alpha=0.5) +
   labs(title="반별 국어 우수 학생", subtitle = "(국어성적 A+)",
-       caption="Source: ggplot2::mpg",
+       caption="Source: 성적.csv",
        x = "성적",
        y = "밀도",
-       fill = "실린더수")
+       fill = "반 이름")
 
 
 ```

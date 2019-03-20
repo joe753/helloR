@@ -148,7 +148,6 @@ data$평균 = (data[,4] + data[,5] + data[,6] + data[,7] + data[,8]) / 5
 result = aggregate(data=guk80[data$국어 >= 80, ], cbind(국어,평균)~반, mean)
 result
 
-options(encoding="UTF-8")
 
 
 
@@ -629,7 +628,6 @@ d2 = mpg %>%
   group_by(year, displ) %>% 
   summarise(m1 = mean(cty), m2 = mean(hwy))
 b = bind_cols(d1, d2)
-View(b)
 
 ggplot( b, aes(x=displ)) + 
   geom_line(aes(y=m1, color='1999 cty')) + 
@@ -642,7 +640,7 @@ ggplot( b, aes(x=displ)) +
   xlim(1, 7) +
   scale_y_continuous("연비", limits = c(5, 45)) +
   labs(title = '연도별 통합연비', subtitle = '굵은선 = 2008년')  -> g4
-
+g4
 ## try2
 
 a = data  %>% group_by (cls, gen)%>% filter(kor >= 80)
@@ -996,10 +994,12 @@ rsdf = dbGetQuery(conn, "select * from MS_Song limit 5")
 
 dbDisconnect(conn)
 dbUnloadDriver(drv)
+x = stringi::stri_enc_toutf8("선물")
+
 
 tryCatch({
   dbBegin(conn)
-  dbGetQuery(conn, "update MS_Song set title='선물1' where song_no = '30514366'")
+  dbGetQuery(conn, paste0("update MS_Song set title= '", x , "' where song_no = '30514366'"))
   dbCommit(conn)
 },
 error = function(e) { 
@@ -1012,8 +1012,27 @@ warning = function(w) {
 finally =  { print ("FFFFFFFFFFFF")  }
 )
 
+mssong = dbGetQuery(conn, "select s.song_no, r.rank, s.genre from MS_Song s inner join Song_Rank r on s.song_no = r.song_no;")
+mssong
+mssong = changeCode(mssong)
+
+mssong 
 
 
 
+ggplot() +
+  geom_point(data=mssong,
+             aes(x=genre, y=-rank),
+             color='blue', size = 4, alpha=0.5)
 
+
+try3 = data %>% group_by(cls) %>% filter(math >= 90)
+try3
+ggplot(try3, aes(math)) +
+  geom_density(aes(fill=factor(cls)), alpha=0.5) +
+  labs(title="반별 수학 우수 학생", subtitle = "(수학성적 A)",
+       caption="Source: 성적.csv",
+       x = "성적",
+       y = "밀도",
+       fill = "반이름")
 
