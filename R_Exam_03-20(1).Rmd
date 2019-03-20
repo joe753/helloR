@@ -1,0 +1,108 @@
+---
+title: "R_Exam_03-20(1)"
+output: html_document
+---
+### 1. 산점도
+##### &emsp;&emsp;**용도** : &nbsp; x축과 y축으로 이루어진 그래프에 두 변수의 값을 점으로 나타낸 그래프이다. 
+##### &emsp;&emsp;삼점도를 이용하면 두 변수의 관계를 파악하는데 용이하다. 
+##### &emsp;&emsp;또한, 산점도를 이용하면 값들이 얼마나 퍼져있는지(산포도)를 시각적으로 확인할 수 있다.
+```{r}
+library('ggplot2')
+
+smdt = data.frame(stuno = 1:5, 
+                  Korean=sample(60:100, 5),
+                  English=sample((5:10) * 10, 5),
+                  Math=sample(50:100, 5))
+
+ggplot() +
+  	geom_point(data=smdt,
+			  aes(x=stuno, y=Korean),
+			  color='blue', size = 5)
+
+```
+
+### 2. 꺾은선 그래프
+##### &emsp;&emsp;**용도** : &nbsp;꺾은선그래프(선도표)는 자료의 값을 점으로 표시하고 그 점들을 선으로 이어서 그린 그래프를 말한다.
+##### &emsp;&emsp;시계열 자료를 이용해서 시간의 흐름에 따라 값이 어떻게 변화하는지를 나타낼 때 많이 사용된다.
+```{r}
+library('dplyr')
+mpg = as.data.frame(ggplot2::mpg)
+
+d1 = mpg %>% 
+  filter(year == 1999) %>% 
+  group_by(year,displ) %>% 
+  summarise(m1 = mean(cty), m2 = mean(hwy))
+d2 = mpg %>% 
+  filter(year == 2008) %>%
+  group_by(year, displ) %>% 
+  summarise(m1 = mean(cty), m2 = mean(hwy))
+b = bind_cols(d1, d2)
+
+ggplot( b, aes(x=displ)) + 
+  geom_line(aes(y=m1, color='1999 cty')) + 
+  geom_line(aes(y=m2, color='1999 hwy')) +
+  geom_line(aes(y=m11, color='2008 cty'), size=2) +
+  geom_line(aes(y=m21, color='2008 hwy'), size=2) +
+  scale_colour_manual("", breaks = c("1999 cty", "1999 hwy","2008 cty", "2008 hwy"),
+                      values = c("red", "grey", "blue", "black")) +
+  xlab("배기량") +
+  xlim(1, 7) +
+  scale_y_continuous("연비", limits = c(5, 45)) +
+  labs(title = '연도별 통합연비', subtitle = '굵은선 = 2008년')  -> g4
+g4
+
+```
+
+### 3. 막대 그래프
+##### &emsp;&emsp;**용도** : &nbsp;도수분포표를 막대모양으로 시각화한 것이 막대도표이다.
+##### &emsp;&emsp;다시 말하면 자료의 범주별 빈도를 요약해서 나타낸 그래프라고 할 수 있다.
+```{r}
+load('data/data.rda')
+data = dplyr::rename(data, stuno=학번, cls=반, gen=성별, math=수학, kor=국어, eng=영어, sci=과학, art=예체)
+a = data  %>% group_by (cls, gen)%>% filter(kor >= 80)
+
+
+ggplot(a, aes(cls)) +
+  geom_bar(aes(fill=gen),
+           width = 0.5) +
+  theme(axis.text.x = element_text(angle=0,     
+                                   vjust=0.6)) +   
+  scale_fill_discrete(name = "성별") + 
+  xlab("학급") + 
+  ylab("학생수") + 
+  labs(title = '국어 우수 학생', subtitle = '80점 이상')
+
+```
+
+
+### 4. 히스토그램
+##### &emsp;&emsp;**용도** : &nbsp; 히스토그램은 연속형 자료에 대한 도수분포표를 시각화한 그래프다.
+##### &emsp;&emsp;연속형 자료를 계급으로 나누어 계급별 도수를 막대로 나타낸다.
+```{r}
+ggplot(mpg, aes(displ)) +
+  geom_histogram(aes(fill=class), 
+                 binwidth = .3,
+                 col='black',       
+                 size=.1) +        
+  labs(title = 'Title', subtitle = 'Sub Title')
+
+
+```
+
+
+### 5. 분포,밀도그래프
+##### &emsp;&emsp;**용도** : &nbsp; 분포,밀도그래프는 연속적인 확률변수의 분포를 연결된 선으로 연결하여 나타내며,
+##### &emsp;&emsp;어느 한 값(점) 에서의 높이는 그 값이 나올 확률이 어느정도 되는지, 데이터에서 얼마나 밀집하는지 나타낸다.
+```{r}
+try3 = data %>% group_by(cls) %>% filter(kor >= 95)
+try3
+ggplot(try3, aes(kor)) +
+  geom_density(aes(fill=factor(cls)), alpha=0.5) +
+  labs(title="반별 국어 우수 학생", subtitle = "(국어성적 A+)",
+       caption="Source: ggplot2::mpg",
+       x = "성적",
+       y = "밀도",
+       fill = "실린더수")
+
+
+```
