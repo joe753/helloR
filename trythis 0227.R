@@ -648,15 +648,15 @@ a
 
 
 
-ggplot(a, aes(cls)) +
-  geom_bar(aes(fill=gen),
-           width = 0.5) +
-  theme(axis.text.x = element_text(angle=0,       # 글씨의 기울기
-                                   vjust=0.6)) +   # 글씨의 하단 맞춤(띄우기)
-  scale_fill_discrete(name = "성별") + # legend
-  xlab("학급") + 
-  ylab("학생수") + 
-  labs(title = '국어 우수 학생', subtitle = '80점 이상')
+  ggplot(a, aes(cls)) +
+    geom_bar(aes(fill=gen),
+             width = 0.5) +
+    theme(axis.text.x = element_text(angle=0,       # 글씨의 기울기
+                                     vjust=0.6)) +   # 글씨의 하단 맞춤(띄우기)
+    scale_fill_discrete(name = "성별") + # legend
+    xlab("학급") + 
+    ylab("학생수") + 
+    labs(title = '국어 우수 학생', subtitle = '80점 이상')
 
 
 ### try3
@@ -1026,6 +1026,18 @@ ggplot() +
              color='blue', size = 4, alpha=0.5)
 
 
+
+ggplot(a, aes(cls)) +
+  geom_bar(aes(fill=gen),
+           width = 0.5) +
+  theme(axis.text.x = element_text(angle=0,       # 글씨의 기울기
+                                   vjust=0.6)) +   # 글씨의 하단 맞춤(띄우기)
+  scale_fill_discrete(name = "성별") + # legend
+  xlab("학급") + 
+  ylab("학생수") + 
+  labs(title = '국어 우수 학생', subtitle = '80점 이상')
+
+
 try3 = data %>% group_by(cls) %>% filter(math >= 90)
 try3
 ggplot(try3, aes(math)) +
@@ -1036,3 +1048,12 @@ ggplot(try3, aes(math)) +
        y = "밀도",
        fill = "반이름")
 
+ggplot(try3, aes(cls)) +
+  geom_bar(aes(fill=gen),
+           width = 0.5) +
+  theme(axis.text.x = element_text(angle=0,       # 글씨의 기울기
+                                   vjust=0.6)) +   # 글씨의 하단 맞춤(띄우기)
+  scale_fill_discrete(name = "성별") + # legend
+  xlab("학급") + 
+  ylab("학생수") + 
+  labs(title = '수학 우수 학생', subtitle = '90점 이상')

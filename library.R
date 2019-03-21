@@ -12,6 +12,17 @@ library(xts)
 library(sqldf)
 
 
+
+
+
+###tm
+library(tm)
+library('SnowballC')
+library(RColorBrewer)
+library(wordcloud)
+
+
+
 options(encoding="UTF-8")
 data = read.csv('data/성적.csv')
 data = dplyr::rename(data, stuno=학번, cls=반, gen=성별, math=수학, kor=국어, eng=영어, sci=과학, art=예체)
