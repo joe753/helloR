@@ -44,6 +44,9 @@ library(ROAuth)
 library(rJava)
 library(KoNLP)
   
+
+library(RColorBrewer)
+library(wordcloud)
   
   
 

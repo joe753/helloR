@@ -13,3 +13,54 @@ setup_twitter_oauth(api_key, api_secret, token, token_secret)
 
 install.packages(c("rJava", "memoise", "KoNLP"))
 
+searchTwitter(enc2utf8('승리'), n=100, lan='ko')
+
+tweets = searchTwitter(enc2utf8('심마담'), n=1000, lan='ko', 
+                       since='2019-03-11', until='2019-03-31')
+
+tdf = twListToDF(tweets)
+
+tdf
+nrow(tdf)
+colnames(tdf)
+names(tdf)
+
+tdf %>% filter(regexpr('광고',text) == -1)
+head(tw)
+
+tw = unique(tdf$text) 
+
+options(encoding= "utf-8")
+options(encoding= "cp949")
+tw
+
+
+tw = gsub("[[:cntrl:]]", "", tw)  
+tw = gsub("http[s]?://[[:alnum:].\\/]+", "", tw)  
+tw = gsub("&[[:alnum:]]+;", "", tw)    
+tw = gsub("@[[:alnum:]]+;", "", tw) 
+tw = gsub("@[[:alnum:]]+[:]?", "", tw)
+tw = gsub("[ㄱ-ㅎㅏ-ㅣ]","",tw) 
+tw = gsub("\\s{2,}", " ", tw)
+tw = gsub("[[:punct:]]", "", tw)  
+tw = gsub("https", "", tw)
+tw = gsub("RT", "", tw)
+tw = gsub('<.*>', '', enc2native(tw))
+
+tw
+
+wc = sapply(tw, extractNoun, USE.NAMES = F)
+
+ul = unlist(wc)
+ul = ul[nchar(ul) > 1]
+wc1 = table(ul)
+
+wc2 = head(sort(wc1, decreasing = T), 100)
+
+pal = brewer.pal(9, "Set1")
+
+wordcloud(names(wc2), freq=wc2, scale=c(3,0.5), rot.per=0.25, 
+          min.freq = 1, random.order = F, random.color = T, colors = pal)
+
+wc
+names(wc)
