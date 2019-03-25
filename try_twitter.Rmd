@@ -27,11 +27,11 @@ setup_twitter_oauth(api_key, api_secret, token, token_secret)
 
 
 ```{r setup}
-tweets = searchTwitter(enc2utf8('심마담'), n=10, lan='ko', 
+tweets = searchTwitter(enc2utf8('심마담'), n=1000, lan='ko', 
                        since='2019-03-11', until='2019-03-31')
 
 tdf = twListToDF(tweets)
-tdf %>% filter(regexpr('광고',text) == -1)
+tdf = tdf %>% filter(regexpr('광고',text) == -1)
 tw = unique(tdf$text) 
 tw = gsub("[[:cntrl:]]", "", tw)  
 tw = gsub("http[s]?://[[:alnum:].\\/]+", "", tw)  
