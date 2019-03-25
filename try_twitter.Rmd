@@ -1,0 +1,62 @@
+---
+title: "Twitter ['심마담']"
+output: html_document
+---
+```{r, echo=FALSE}
+library(dplyr)
+library(twitteR); 
+library(RCurl); 
+library(RJSONIO); 
+library(stringr)
+library(streamR); 
+library(ROAuth)
+library(rJava)
+library(KoNLP)
+library(RColorBrewer)
+library(wordcloud)
+
+Sys.setenv(JAVA_HOME="C:/Program Files/Java/jre1.8.0_191/")
+api_key = "fyrpnvjXBjpf1pPFEOL0m08ep"
+api_secret = "sVPqcKBg6o9MBaE8pO3cDMIXZuR7ccDernAg08m81XWxovfLWu"
+token = "1108923973427879939-119vJBmHIMaJb1jjVFKfUG4GPUZUSY"
+token_secret = "JksRettfNZ7l0u7kfan50kuad1srDFIHQqfl1b4iPekrc"
+setup_twitter_oauth(api_key, api_secret, token, token_secret)
+
+```
+
+
+
+```{r setup}
+tweets = searchTwitter(enc2utf8('심마담'), n=10, lan='ko', 
+                       since='2019-03-11', until='2019-03-31')
+
+tdf = twListToDF(tweets)
+tdf %>% filter(regexpr('광고',text) == -1)
+tw = unique(tdf$text) 
+tw = gsub("[[:cntrl:]]", "", tw)  
+tw = gsub("http[s]?://[[:alnum:].\\/]+", "", tw)  
+tw = gsub("&[[:alnum:]]+;", "", tw)    
+tw = gsub("@[[:alnum:]]+;", "", tw) 
+tw = gsub("@[[:alnum:]]+[:]?", "", tw)
+tw = gsub("[ㄱ-ㅎㅏ-ㅣ]","",tw) 
+tw = gsub("\\s{2,}", " ", tw)
+tw = gsub("[[:punct:]]", "", tw)  
+tw = gsub("https", "", tw)
+tw = gsub("RT", "", tw)
+tw = gsub('<.*>', '', enc2native(tw))
+
+wc = sapply(tw, extractNoun, USE.NAMES = F)
+
+ul = unlist(wc)
+ul = ul[nchar(ul) > 1]
+wc1 = table(ul)
+
+wc2 = head(sort(wc1, decreasing = T), 100)
+
+pal = brewer.pal(9, "Set1")
+
+wordcloud(names(wc2), freq=wc2, scale=c(3,0.5), rot.per=0.25, 
+          min.freq = 1, random.order = F, random.color = T, colors = pal)
+
+```
+
