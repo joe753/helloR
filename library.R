@@ -48,7 +48,8 @@ library(KoNLP)
 library(RColorBrewer)
 library(wordcloud)
   
-  
+library(arules); library(igraph); library(combinat)
+
 
   
 
