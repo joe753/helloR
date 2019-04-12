@@ -1,0 +1,164 @@
+---
+title: "Exam0309"
+output: html_document
+---
+
+```{r, echo=FALSE}
+library('dplyr')
+library('psych')
+library('ggplot2')
+library('gridExtra')
+
+
+load('data/data.rda')
+
+
+```
+
+
+### 1-1. `죽반과 매반의 수학성적은 차이가 없다` 라는 가설을 검증하시오.
+```{r}
+# 1. 데이터준비
+mnmath = data %>% filter(cls %in% c('죽', '매')) %>% select(cls, math)
+mnmath$cls = factor(mnmath$cls, levels=c('죽','매'), labels=c('죽', '매'))
+describeBy(mnmath$math, mnmath$cls, mat = T)
+
+# 2. 데이터 확인
+
+boxplot(mnmath$math ~ mnmath$cls)
+# layout(matrix(c(1,1,2,3), 2, 2, byrow = T))
+boxplot(mnmath$math ~ mnmath$cls)
+hist(mnmath$math[mnmath$cls == '죽'])
+hist(mnmath$math[mnmath$cls == '매'])
+
+# 3. 등분산 검정
+var.test(mnmath$math ~ mnmath$cls, data = mnmath)
+
+
+# 4. t-test 수행
+
+t.test(mnmath$math ~ mnmath$cls, data = mnmath,
+       alternative = c("two.sided"),
+       var.equal = T,                 # 등분산검증의 p-value < 0.05 이면 False로!
+       conf.level = 0.95)
+
+# 5. 결과 그래프
+
+mu = 63.4; se = 2.144661; rn = sort(rnorm(1000, mu, se))
+plot(rn, dnorm(rn, mu, se), col='green', type = 'l', main = '평균점수',
+     xlim = c(50, 80), ylim = c(0, 0.25)) 
+abline(v=mu, col="green", lty=5)
+par(new = T)  
+
+mu = 63.84; se = 2.114145; rn = sort(rnorm(1000, mu, se))
+plot(rn, dnorm(rn, mu, se), col='red', type = 'l', main = '평균점수',
+     xlim = c(50, 80), ylim = c(0, 0.25))
+abline(v=mu, col="red", lty=5)
+```
+
+
+### 1-2.  4개반 수학성적의 유사도(동질의 정도)를 분석하시오.
+
+```{r}
+## 1. 데이터 준비
+alldata = data %>% select(cls, math)
+describeBy(alldata$math, alldata$cls, mat = T)
+
+
+## 2. 그래프로 확인
+ggplot(data, aes(x=cls, y=math)) +
+  geom_boxplot(outlier.color = 'blue') +
+  ggtitle("각반 수학 성적")
+
+ggplot(data, aes(x=math)) +
+  geom_histogram(binwidth = 10, col='white') +
+  facet_grid(. ~ data$cls)   # 그룹별로 그려라!
+
+
+## 3-1. 등분산 검정
+bartlett.test(data$math ~ data$cls, data=data)  # ⇒ p-value = 0.8497 ⇒ 약 85% 동질하다
+
+## 3-2. ANOVA 분석
+aaa = aov(data$math ~ data$cls, data=data)
+summary(aaa)   
+
+## 4. 사후 분석
+TukeyHSD(aaa)
+
+## 5. 동질성 결과 그래프  
+plot(TukeyHSD(aaa)) 
+
+
+
+## 최종 결과 리포트
+draw = function(rn, mu, se, col) {
+  plot(rn, dnorm(rn, mu, se), col=col, type = 'l',
+       xlim = c(50, 80), ylim = c(0, 0.25))
+  abline(v=mu, col=col, lty=5)
+}
+
+mu = 63.5; se = 2.020535; rn = sort(rnorm(1000, mu, se))
+draw(rn, mu, se, 'red')
+par(new = T)
+mu = 63; se = 2.028632; rn = sort(rnorm(1000, mu, se))
+draw(rn, mu, se, 'blue')
+par(new = T)
+mu = 63.8; se = 2.114145; rn = sort(rnorm(1000, mu, se))
+draw(rn, mu, se, 'green')
+par(new = T)
+mu = 63.4; se = 2.144661; rn = sort(rnorm(1000, mu, se))
+draw(rn, mu, se, 'black')
+
+legend('topright',
+       legend=c('국', '난', '매', '죽'),
+       pch=8,
+       col=c('red', 'blue', 'green', 'black'),
+       bg='gray')
+
+```
+
+### 2-1. 전교생의 국어성적과 영어성적에 대한 상관분석(Correlation)을 수행하시오.
+
+```{r}
+# 1. 데이터 준비
+res = data %>% select(kor,eng)
+
+# 2. 기술통계 확인
+describe(res)
+
+# 3. 그래프로 데이터 확인하기
+pairs.panels(res)
+
+# 4. 상관분석
+cor(res, use = "complete.obs", method = c("pearson"))
+
+# 5. 결과 그래프
+plot(kor ~ eng, data=res)
+abline(lm(kor ~ eng, data=res), col='red')
+
+```
+
+### 2-2. mpg데이터의 displ, cyl, trans, cty, hwy 중 1999년과 2008년 두 해의 고객 만족도가 0과 1이라고 했을 때, 어떤 요소가 만족도에 많은 기여를 했는지 로지스틱 회귀분석하시오.
+
+```{r}
+# 1. 데이터 준비
+unique(mpg$trans)
+unique(mpg$year)
+lrmpg = mpg %>%
+ mutate(trs = ifelse(substr(trans, 1, 4) == 'auto', 1, 0),
+        y = ifelse(year == 1999, 0, 1)) %>%
+ select(y, displ, cyl, trs, cty, hwy)
+
+# 2. 기본 통계치 확인
+describe(lrmpg)
+pairs.panels(lrmpg)
+
+# 3. 분석
+glmdmpg = glm(y ~ displ+cyl+cty+hwy+trs, family = binomial, data=lrmpg)
+summary(glmdmpg)  # Estimate: 기울기(비례/반비례), Pr: 0.05보다 작으면 영향이 있다
+plot(glmdmpg)
+
+# 4. coefficients(기울기+절편)와 confint(신뢰구간)로 LOR(Log Odd Ratio) 구하기
+round(exp(cbind(LOR = coef(glmdmpg), confint(glmdmpg))), 2)
+```
+

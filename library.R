@@ -10,6 +10,7 @@ library(plotly)
 library(dygraphs)
 library(xts)  
 library(sqldf)
+library ("psych")
 
 
 
